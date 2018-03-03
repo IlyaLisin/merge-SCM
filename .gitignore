@@ -1,0 +1,9 @@
+# IDE stuff
+.idea/
+*.iml
+
+# dev stuff
+/bin/
+/pkg/
+/vendor/src/
+/vendor/pkg/
