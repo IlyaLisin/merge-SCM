@@ -5,6 +5,7 @@ import (
 
 	"math/rand"
 	"time"
+	"ga"
 )
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
@@ -36,13 +37,22 @@ type SCM_struct struct {
 	//available []e_struct
 
 	adj_matrix [81][81]e_struct
+
+	vCount int
+}
+
+type GA struct {
+	ga.Chromosome
 }
 
 func main() {
 	V_COUNT = 9
 	E_COUNT = 100
 
-	scm := initSCM()
+	scm := new(SCM_struct)
+	scm.initSCM()
+
+	chrms := ga.Init(5)
 
 	//
 	for i := range scm.adj_matrix[0] {
@@ -57,11 +67,11 @@ func main() {
 	//fmt.Println("двумерный массив: ", scm.adj_matrix)
 }
 
-func initSCM() *SCM_struct {
+func (scm *SCM_struct) initSCM() *SCM_struct {
 	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
 
-	scm := new(SCM_struct)
+	//scm := new(SCM_struct)
 	fmt.Println("init V")
 	// генерация узлов, Vij
 	for i := 0; i < V_COUNT; i++ {
@@ -142,7 +152,29 @@ func initSCM() *SCM_struct {
 	return scm
 }
 
+func (scm *SCM_struct) checkGraph() bool {
+	// проверка на саму себя
+	for i := range scm.adj_matrix[0] {
+		if scm.adj_matrix[i][i].S != 0  {
+			return false
+		}
+		for j := range scm.adj_matrix[0] {
+			if i == j {
+				continue
+			}
+			// проверка на производство -> склад -> потребление
+			if scm.adj_matrix[i][j].v1.Type >= scm.adj_matrix[i][j].v2.Type {
+				return false
+			}
+		}
+	}
 
+	return true
+}
+
+func (chr *GA) Fitness() int {
+
+}
 
 //func checkConnectivity(scm *SCM_struct) bool {
 //	for
