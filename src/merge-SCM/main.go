@@ -11,12 +11,12 @@ import (
 // V_COUNT - количество узлов, E_COUNT - количество ребер
 const (
 	V_COUNT = 9
-	E_COUNT = 1000
+	E_COUNT = 100
 
 	P_COUNT = 3
 	C_COUNT = 3
 	S_COUNT = 3
-	)
+)
 //var E_COUNT int
 //
 //var P_COUNT int //производство
@@ -66,8 +66,6 @@ type Chromosome struct {
 }
 
 func main() {
-
-
 	scm := new(SCM_struct)
 	scm.initSCM_2()
 
@@ -89,23 +87,18 @@ func main() {
 	//fmt.Println("QQQQ", scm.adj_matrix1)
 	//os.Exit(1)
 
-	for evol := 0; evol < 50; evol++ {
+	for evol := 0; evol < 5; evol++ {
 		fmt.Println("Evolution %d", evol)
 		fmt.Println("ch_arr count ", len(ch_arr))
 		for _, ch := range ch_arr {
-			//fmt.Println("Chromosome %d", ch.gens)
 			scm.chromosome = ch
 			scm.build()
 			ch.fitness = scm.Fitness()
-			if ch.fitness > float32(0) {
-				fmt.Println("Fitnesssssssssssssssssssssssssssssssssssssss %d", ch.fitness)
-			}
+			fmt.Println("Fitness", ch.fitness)
 		}
 
 		//fmt.Println("%d", len(ch_arr))
-		//fmt.Println("%d", len(ch_arr))
 
-		//os.Exit(0)
 		// Селекция
 		ch_arr = selection(ch_arr)
 
@@ -113,6 +106,9 @@ func main() {
 
 		//TODO мутации
 	}
+
+	fmt.Println("Graph: ", scm.chromosome.gens)
+	fmt.Println("Graph: ", scm.adj_matrix1, " ", scm.adj_matrix2)
 
 	//
 	for i := range scm.adj_matrix[0] {
@@ -229,7 +225,6 @@ func (scm *SCM_struct) initSCM_2() *SCM_struct {
 	//n := P_COUNT + S_COUNT +  C_COUNT
 	//pcn := P_COUNT + C_COUNT
 	//sn := S_COUNT
-
 	// число возможных ребер
 	//r_count := (n*(n-1)/2) - ((pcn)*(pcn-1)/2) - (sn*(sn-1)/2)
 
@@ -269,14 +264,7 @@ func (scm *SCM_struct) initSCM_2() *SCM_struct {
 			A:      0,
 			exists: true,
 		}
-		switch e.v1.Type {
-		case 0:
-			e.Number = e.v1.Number*S_COUNT + e.v2.Number
-		case 1:
-			e.Number = e.v1.Number*S_COUNT + e.v2.Number + V_COUNT
-		default:
-			e.Number = -1
-		}
+		e.Number = e.v1.Number*S_COUNT + e.v2.Number
 		scm.auto = append(scm.auto, e)
 
 		e = e_struct{
@@ -287,14 +275,7 @@ func (scm *SCM_struct) initSCM_2() *SCM_struct {
 			A:      0,
 			exists: true,
 		}
-		switch e.v1.Type {
-		case 0:
-			e.Number = e.v1.Number*S_COUNT + e.v2.Number
-		case 1:
-			e.Number = e.v1.Number*S_COUNT + e.v2.Number + V_COUNT
-		default:
-			e.Number = -1
-		}
+		e.Number = e.v1.Number*S_COUNT + e.v2.Number + V_COUNT
 		scm.auto = append(scm.auto, e)
 	}
 
@@ -320,48 +301,7 @@ func (scm *SCM_struct) initSCM_2() *SCM_struct {
 	//	scm.railway = append(scm.railway, e)
 	//}
 
-	//for i := 0; i < 10; i++ {
-	//	e := e_struct{
-	//		v1: r1.Intn(10),
-	//		v2: r1.Intn(10),
-	//		L: r1.Intn(10),
-	//		S: r1.Intn(10),
-	//	}
-	//	scm.available[i] = e
-	//}
-
-	//for i := range scm.v {
-	//	for j := range scm.v {
-	//		scm.adj_matrix = append(scm.adj_matrix[i], e_struct{})
-	//	}
-	//}
-
-	// все роуты
-	//all_routes := append(scm.auto, scm.railway...)
-	//// выбор роутов с наим стоимостью
-	//for i := range all_routes {
-	//	v1 := all_routes[i].v1
-	//	v2 := all_routes[i].v2
-	//	if v1 == v2 { continue }
-	//	// если 0,0 или стоимость ниже уже записанной
-	//	if (((scm.adj_matrix[v1.ID][v2.ID].v1 == v_struct{} && scm.adj_matrix[v1.ID][v2.ID].v2 == v_struct{}) ||
-	//		(scm.adj_matrix[v1.ID][v2.ID].S > all_routes[i].S)) &&
-	//		((v1.Number != v2.Number)) &&
-	//		(v2.Type - v1.Type == 1)) {
-	//		scm.adj_matrix[v1.ID][v2.ID] = all_routes[i]
-	//	}
-	//}
-
 	scm.eCount = V_COUNT*2
-
-	//for i := range scm.adj_matrix[0] {
-	//	for j := range scm.adj_matrix[0] {
-	//		// Incostiling
-	//		if scm.adj_matrix[i][j].S != 0 && scm.adj_matrix[j][i].S != 0 && scm.adj_matrix[i][j].S >= scm.adj_matrix[j][i].S {
-	//			scm.adj_matrix[i][j] = e_struct{}
-	//		}
-	//	}
-	//}
 
 	return scm
 }
@@ -387,20 +327,15 @@ func (scm *SCM_struct) build() {
 				if r.Number == n {
 					if r.v1.Type == 0 {
 						scm.adj_matrix1[r.v1.Number][r.v2.Number] = r
-						scm.adj_matrix1[r.v1.Number][r.v2.Number].v1 = r.v1
-						scm.adj_matrix1[r.v1.Number][r.v2.Number].v2 = r.v2
 					}
 					if r.v1.Type == 1 {
 						scm.adj_matrix2[r.v1.Number][r.v2.Number] = r
-						scm.adj_matrix2[r.v1.Number][r.v2.Number].v1 = r.v1
-						scm.adj_matrix2[r.v1.Number][r.v2.Number].v2 = r.v2
 					}
 					break
 				}
 			}
 		}
 	}
-	//os.Exit(1)
 }
 
 func (scm *SCM_struct) checkGraph() bool {
@@ -424,33 +359,40 @@ func (scm *SCM_struct) checkGraph() bool {
 }
 
 func (scm *SCM_struct) checkGraph_2() bool {
-	// проверка на саму себя
+	tmpV := make(map[int]int,0)
+
 	for i := range scm.adj_matrix1[0] {
-		//if scm.adj_matrix1[i][i].S != 0  {
-		//	return false
-		//}
 		for j := range scm.adj_matrix1[0] {
-			//if i == j {
-			//	continue
-			//}
 			// проверка на производство -> склад -> потребление
-			if scm.adj_matrix1[i][j].v1.Type >= scm.adj_matrix1[i][j].v2.Type {
+			if scm.adj_matrix1[i][j].exists && scm.adj_matrix1[i][j].v1.Type >= scm.adj_matrix1[i][j].v2.Type {
 				return false
 			}
+			tmpV[scm.adj_matrix1[i][j].v1.ID] = 1
+			tmpV[scm.adj_matrix1[i][j].v2.ID] = 1
 		}
 	}
 	for i := range scm.adj_matrix2[0] {
-		//if scm.adj_matrix2[i][i].S != 0  {
-		//	return false
-		//}
 		for j := range scm.adj_matrix2[0] {
-			//if i == j {
-			//	continue
-			//}
 			// проверка на производство -> склад -> потребление
-			if scm.adj_matrix2[i][j].v1.Type >= scm.adj_matrix2[i][j].v2.Type {
+			if scm.adj_matrix2[i][j].exists && scm.adj_matrix2[i][j].v1.Type >= scm.adj_matrix2[i][j].v2.Type {
 				return false
 			}
+			tmpV[scm.adj_matrix2[i][j].v1.ID] = 1
+			tmpV[scm.adj_matrix2[i][j].v2.ID] = 1
+		}
+	}
+
+	// Все ли вершины задействованы
+	var b bool
+	for i := 0; i < V_COUNT; i++ {
+		b = false
+		for id, exist := range tmpV {
+			if i == id && exist == 1 {
+				b = true
+			}
+		}
+		if !b {
+			return false
 		}
 	}
 
@@ -458,13 +400,10 @@ func (scm *SCM_struct) checkGraph_2() bool {
 }
 
 func (scm *SCM_struct) Fitness() float32 {
-
-	//копируем, чтобы не потерять
-	tmpSCM := scm
 	// берем хромосому и если ген=0, ставим туда пустой роут с exist: false
-	for number, exist := range tmpSCM.chromosome.gens {
+	for number, exist := range scm.chromosome.gens {
 		if !exist {
-			all_routes := append(tmpSCM.auto, tmpSCM.railway...)
+			all_routes := append(scm.auto, scm.railway...)
 			for i := 0; i < len(all_routes) ;i++ {
 				if all_routes[i].Number == number {
 					if all_routes[i].v1.Type == 0 {
@@ -473,29 +412,25 @@ func (scm *SCM_struct) Fitness() float32 {
 					if all_routes[i].v1.Type == 1 {
 						scm.adj_matrix2[all_routes[i].v1.Number][all_routes[i].v2.Number] = e_struct{exists:false}
 					}
-
-					//tmpSCM.adj_matrix[all_routes[i].v1.ID][all_routes[i].v2.ID] = e_struct{exists:false}
 				}
 			}
 		}
 	}
 
-
-	if !tmpSCM.checkGraph_2() {
+	if !scm.checkGraph_2() {
 
 		return 0
 	}
 
-
 	total := 0
-	for i := 0; i < len(tmpSCM.adj_matrix1[0]); i++ {
-		for j := 0; j < len(tmpSCM.adj_matrix1[0]); j++ {
-			total += tmpSCM.adj_matrix1[i][j].S
+	for i := 0; i < len(scm.adj_matrix1[0]); i++ {
+		for j := 0; j < len(scm.adj_matrix1[0]); j++ {
+			total += scm.adj_matrix1[i][j].S
 		}
 	}
-	for i := 0; i < len(tmpSCM.adj_matrix2[0]); i++ {
-		for j := 0; j < len(tmpSCM.adj_matrix2[0]); j++ {
-			total += tmpSCM.adj_matrix2[i][j].S
+	for i := 0; i < len(scm.adj_matrix2[0]); i++ {
+		for j := 0; j < len(scm.adj_matrix2[0]); j++ {
+			total += scm.adj_matrix2[i][j].S
 		}
 	}
 
@@ -503,7 +438,7 @@ func (scm *SCM_struct) Fitness() float32 {
 }
 
 func selection(chromosomes []*Chromosome) []*Chromosome{
-	fmt.Println("selection")
+	//fmt.Println("selection")
 	var totalFitness float32 = 0
 	for _, ch := range chromosomes {
 		totalFitness += ch.fitness
@@ -517,11 +452,13 @@ func selection(chromosomes []*Chromosome) []*Chromosome{
 			ret = append(ret, ch)
 		}
 	}
-	// Дописываем до количества
-	for ; len(ret) < len(chromosomes) ; {
-		for _, ch := range chromosomes {
-			if ch.fitness >= averageFitness {
-				ret = append(ret, ch)
+	if len(ret) < 5 {
+		// Дописываем до количества
+		for ; len(ret) < len(chromosomes); {
+			for _, ch := range chromosomes {
+				if ch.fitness >= averageFitness {
+					ret = append(ret, ch)
+				}
 			}
 		}
 	}
@@ -530,7 +467,7 @@ func selection(chromosomes []*Chromosome) []*Chromosome{
 }
 
 func crossover(chromosomes []*Chromosome) []*Chromosome {
-	fmt.Println("crossover")
+	//fmt.Println("crossover")
 	childs := make([]*Chromosome,0)
 	i := 0
 	j := 1
@@ -559,8 +496,10 @@ func crossover(chromosomes []*Chromosome) []*Chromosome {
 		j += 2
 	}
 
-	if len(childs) != len(chromosomes) {
-		childs = append(childs, chromosomes[0])
+	if len(childs) < 5 {
+		if len(childs) != len(chromosomes) {
+			childs = append(childs, chromosomes[0])
+		}
 	}
 
 	//fmt.Println("2 ", childs[0].gens)
