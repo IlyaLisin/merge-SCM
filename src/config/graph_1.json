@@ -1,0 +1,94 @@
+{
+  "tops": [
+    {
+      "uuid": "21fcead2-f1a1-4ebb-b19c-4ed527c535af",
+      "id": 1,
+      "type": 0,
+      "volume": 10,
+      "next_ids": [
+        4
+      ]
+    },
+    {
+      "uuid": "cde7d541-3419-4ab4-b19e-657b0eae2313",
+      "id": 2,
+      "type": 0,
+      "volume": 10,
+      "next_ids": [
+        3, 4
+      ]
+    },
+    {
+      "uuid": "584e743a-311b-4ad7-8fb1-565d798d6db3",
+      "id": 3,
+      "type": 1,
+      "volume": 10,
+      "next_ids": [
+        5
+      ]
+    },
+    {
+      "uuid": "01b01655-43b9-44a7-ba0d-cabee167b21c",
+      "id": 4,
+      "type": 1,
+      "volume": 10,
+      "next_ids": [
+        5
+      ]
+    },
+    {
+      "uuid": "4003aeeb-306e-4c4c-8437-d5a74ad25d99",
+      "id": 5,
+      "type": 2,
+      "volume": 10,
+      "next_ids": []
+    }
+  ],
+  "routes": [
+    {
+      "id": 1,
+      "v_id_1": 1,
+      "v_id_2": 4,
+      "l": 10,
+      "s": 10,
+      "a": 0,
+      "cells": []
+    },
+    {
+      "id": 2,
+      "v_id_1": 2,
+      "v_id_2": 3,
+      "l": 10,
+      "s": 10,
+      "a": 0,
+      "cells": []
+    },
+    {
+      "id": 3,
+      "v_id_1": 2,
+      "v_id_2": 4,
+      "l": 10,
+      "s": 10,
+      "a": 0,
+      "cells": []
+    },
+    {
+      "id": 4,
+      "v_id_1": 3,
+      "v_id_2": 5,
+      "l": 10,
+      "s": 10,
+      "a": 0,
+      "cells": []
+    },
+    {
+      "id": 5,
+      "v_id_1": 4,
+      "v_id_2": 5,
+      "l": 10,
+      "s": 10,
+      "a": 0,
+      "cells": []
+    }
+  ]
+}
