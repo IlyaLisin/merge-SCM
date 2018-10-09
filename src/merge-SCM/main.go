@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"sort"
-	"github.com/m4rw3r/uuid"
 	"math/rand"
 	"time"
+	"service"
+
+	"github.com/ulule/deepcopier"
 )
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
@@ -74,9 +76,68 @@ func main() {
 	//scm.generateRoutes()
 
 	scm := new(SCM)
+	scm.initSCM()
 	scm.prepareRoutes()
 
-	fmt.Println(len(scm.Routes))
+	buf := *scm
+	buf.Routes = nil
+
+	//fmt.Println(scm.Routes)
+	//fmt.Println(buf.Routes)
+
+	population := make([]SCM, 5)
+	r := service.New()
+
+	//init 5 first
+	for n := 0; n < 5; n++ {
+		// TODO How copying struct 
+		subScm := SCM{}
+		deepcopier.Copy(scm).To(subScm)
+		//subScm := *scm
+		//subScm.Routes = append(scm.Routes)
+		//subScm.Tops = append(scm.Tops)
+		subScm.chromosome = new(Chromosome)
+		subScm.chromosome.gens = make(map[int]bool, len(subScm.Routes))
+
+		// This is Magic ╰( ⁰ ਊ ⁰ )━☆ﾟ.*･｡..::****::..
+		// стваим только существующие роуты
+		newRoutes := make([]Route, 0)
+		for i := 0; i < len(subScm.Routes); i++ {
+			subScm.chromosome.gens[i] = r.Bool()
+			if subScm.chromosome.gens[i] {
+				for j, r := range subScm.Routes {
+					if r.ID == i {
+						newRoutes = append(newRoutes, subScm.Routes[j])
+					}
+				}
+			}
+		}
+		subScm.Routes = newRoutes
+
+		for _, v := range subScm.Tops {
+			v.NextIds = make([]int, 0)
+			for _, r := range subScm.Routes {
+				if v.ID == r.V1 {
+					v.NextIds = append(v.NextIds, r.V2)
+				}
+			}
+			fmt.Println(v.NextIds)
+		}
+
+		population = append(population, subScm)
+	}
+
+	//for _, s := range population {
+	//	//fmt.Println(s.chromosome)
+	//	fmt.Println(s.Routes)
+	//	fmt.Println(s.Tops)
+	//}
+
+	//fmt.Println(population)
+	fmt.Println("123123")
+	fmt.Println(population[1].Routes)
+	fmt.Println(population[1].Tops)
+
 	//scm.initSCM()
 	//
 	//r := service.New()
@@ -162,7 +223,7 @@ type SCM struct {
 func (scm *SCM) prepareRoutes() {
 	routes := readRoutes("src/config/new_routes.json")
 
-	fmt.Println(len(routes))
+	//fmt.Println(len(routes))
 
 	minRoutes := make([]Route, 0)
 
@@ -199,13 +260,45 @@ func (scm *SCM) prepareRoutes() {
 	}
 
 	scm.Routes = minRoutes
+
+	//countProd := 0
+	//countStor := 0
+	//countCons := 0
+	//
+	//for _, v := range scm.Tops {
+	//	if v.Type == 0 {
+	//		countProd += 1
+	//	}
+	//	if v.Type == 1 {
+	//		countStor += 1
+	//	}
+	//	if v.Type == 2 {
+	//		countCons += 1
+	//	}
+	//}
+
+	// пронумеруем по порядку
+	sort.Slice(scm.Routes, func(i, j int) bool {
+		if scm.Routes[i].V1 < scm.Routes[j].V1 {
+			return true
+		}
+		if scm.Routes[i].V1 > scm.Routes[j].V1 {
+			return false
+		}
+		return scm.Routes[i].V2 < scm.Routes[j].V2
+	})
+
+	for i := range scm.Routes {
+		scm.Routes[i].ID = i + 1
+	}
+
 }
 
 func (scm *SCM) initSCM() *SCM {
 
-	for i := 1; i < 10; i++ {
-		fmt.Println(uuid.V4())
-	}
+	//for i := 1; i < 10; i++ {
+	//	fmt.Println(uuid.V4())
+	//}
 
 	graph1 := readGraph("src/config/graph_1.json")
 	graph2 := readGraph("src/config/graph_2.json")
@@ -222,9 +315,9 @@ func (scm *SCM) initSCM() *SCM {
 		scm.Tops[index].ID = index + 1
 	}
 
-	for _, element := range scm.Tops {
-		println(element.ID)
-	}
+	//for _, element := range scm.Tops {
+	//	println(element.ID)
+	//}
 
 	return scm
 }
@@ -232,9 +325,9 @@ func (scm *SCM) initSCM() *SCM {
 func readRoutes(path string) []Route {
 	jsonFile, err := os.Open(path)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 
 	defer jsonFile.Close()
 
@@ -305,8 +398,8 @@ func (scm *SCM) generateRoutes() {
 	}
 
 	jsonData, err := json.Marshal(routes)
-	fmt.Println(routes)
-	fmt.Println(jsonData)
+	//fmt.Println(routes)
+	//fmt.Println(jsonData)
 	if err != nil {
 		fmt.Println(err)
 	}
