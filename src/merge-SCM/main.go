@@ -10,12 +10,12 @@ import (
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
 const (
-	V_COUNT = 9
+	V_COUNT = 81
 	E_COUNT = 100
 
-	P_COUNT = 3
-	C_COUNT = 3
-	S_COUNT = 3
+	P_COUNT = 27
+	C_COUNT = 27
+	S_COUNT = 27
 )
 //var E_COUNT int
 //
@@ -66,6 +66,8 @@ type Chromosome struct {
 }
 
 func main() {
+	t0 := time.Now()
+
 	scm := new(SCM_struct)
 	scm.initSCM_2()
 
@@ -121,6 +123,9 @@ func main() {
 	}
 
 	//fmt.Println("двумерный массив: ", scm.adj_matrix)
+
+	t1 := time.Now()
+	fmt.Printf("Elapsed time: %v", t1.Sub(t0))
 }
 
 //func (scm *SCM_struct) initSCM() *SCM_struct {
