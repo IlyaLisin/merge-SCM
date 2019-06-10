@@ -10,12 +10,11 @@ import (
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
 const (
-	V_COUNT = 9
-	E_COUNT = 100
+	V_COUNT = 50
 
-	P_COUNT = 3
-	C_COUNT = 3
-	S_COUNT = 3
+	P_COUNT = 15
+	C_COUNT = 20
+	S_COUNT = 15
 )
 
 type Vs struct {
@@ -41,8 +40,6 @@ type SCM struct {
 }
 
 func main() {
-	println("HEY")
-
 	scm := new(SCM)
 	scm.generateGraph()
 	scm.generateRoutes()
@@ -90,7 +87,7 @@ func (scm *SCM) generateRoutes() {
 		fmt.Println(err)
 	}
 
-	err = ioutil.WriteFile("src/config/routes.json", jsonData, 0644)
+	err = ioutil.WriteFile("src/config/routes50.json", jsonData, 0644)
 
 	if err != nil {
 		fmt.Println(err)
@@ -139,7 +136,7 @@ func (scm *SCM) generateGraph() {
 		fmt.Println(err)
 	}
 
-	err = ioutil.WriteFile("src/config/graph.json", jsonData, 0644)
+	err = ioutil.WriteFile("src/config/graph50.json", jsonData, 0644)
 
 	if err != nil {
 		fmt.Println(err)

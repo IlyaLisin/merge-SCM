@@ -9,13 +9,14 @@ import (
 	"service"
 
 	"github.com/jinzhu/copier"
+	"time"
 )
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
 const (
-	P_COUNT = 3
-	C_COUNT = 3
-	S_COUNT = 3
+	P_COUNT = 15
+	C_COUNT = 20
+	S_COUNT = 15
 )
 
 type Vs struct {
@@ -49,6 +50,7 @@ type Chromosome struct {
 }
 
 func main() {
+	t0 := time.Now()
 	scm := new(SCM)
 	scm.initSCM()
 	scm.prepareRoutes()
@@ -105,8 +107,8 @@ func main() {
 		chromosomes = append(chromosomes, *subScm.chromosome)
 	}
 
-	for evol := 0; evol < 5; evol++ {
-		fmt.Println("Evolution", evol)
+	for evol := 0; evol < 1000; evol++ {
+		//fmt.Println("Evolution", evol)
 
 		childs := crossover(chromosomes)
 
@@ -146,12 +148,16 @@ func main() {
 	fmt.Println("Graph: ", scm.chromosome.gens)
 
 	fmt.Println("\n")
+
 	for _, s := range population {
 		fmt.Println(s.Routes)
 		fmt.Println(s.chromosome.fitness)
 		fmt.Println("\n")
 	}
 
+	t1 := time.Now();
+
+	fmt.Printf("Elapsed time: %v \n", t1.Sub(t0))
 	// time.Sleep(time.Duration(100)*time.Second)
 }
 
@@ -166,7 +172,7 @@ func (scm *SCM) fitness() {
 
 // выбираем на каждый путь наименьшуюю стоимость
 func (scm *SCM) prepareRoutes() {
-	routes := readRoutes("src/config/routes.json")
+	routes := readRoutes("src/config/routes50.json")
 
 	minRoutes := make([]Route, 0)
 
@@ -221,7 +227,7 @@ func (scm *SCM) prepareRoutes() {
 }
 
 func (scm *SCM) initSCM() *SCM {
-	graph := readGraph("src/config/graph.json")
+	graph := readGraph("src/config/graph50.json")
 
 	scm.Tops = graph.Tops
 
@@ -344,6 +350,7 @@ func selection(scms []*SCM) []*SCM {
 
 func crossover(chromosomes []Chromosome) []*Chromosome {
 	childs := make([]*Chromosome,0)
+
 	i := 0
 	j := 1
 

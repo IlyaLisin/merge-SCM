@@ -6,15 +6,16 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"sort"
-	"math"
-	"strconv"
+	"time"
+	"math/big"
+	"strings"
 )
 
 // V_COUNT - количество узлов, E_COUNT - количество ребер
 const (
-	P_COUNT = 3
-	C_COUNT = 3
-	S_COUNT = 3
+	P_COUNT = 15
+	C_COUNT = 20
+	S_COUNT = 15
 )
 
 type Vs struct {
@@ -41,11 +42,16 @@ type SCM struct {
 }
 
 func main() {
+	t0 := time.Now()
+
 	scm := new(SCM)
 	scm.initSCM()
 	scm.prepareRoutes()
 
-	max := int(math.Pow(2, 18))
+	max := new(big.Int).Exp(big.NewInt(2), big.NewInt(int64(len(scm.Routes))), nil)
+
+	fmt.Println(len(scm.Routes))
+	fmt.Println(max)
 
 	byteString := make(map[int]int, len(scm.Routes))
 
@@ -53,11 +59,18 @@ func main() {
 		byteString[i] = 0
 	}
 
-	bestSum := 9999999
+	bestSum := 999999999999999
 	bestByteString := make(map[int]int, len(scm.Routes))
 
-	for i := 0; i < max; i++ {
-		str := strconv.FormatInt(int64(i), 2)
+	var one = big.NewInt(1)
+	start := big.NewInt(0)
+
+	for i := new(big.Int).Set(start); i.Cmp(max) < 0; i.Add(i, one) {
+		//str := strconv.FormatInt(i, 2)
+		str := fmt.Sprintf("%b", i)
+
+		str = addZeros(str, len(scm.Routes))
+		fmt.Println(str)
 
 		for k, s := range str {
 			if s == '1' {
@@ -101,7 +114,17 @@ func main() {
 	//fmt.Println("Best", bestByteString)
 	fmt.Println("Best", bestSum)
 
+	t1 := time.Now();
+	fmt.Printf("Elapsed time: %v \n", t1.Sub(t0))
 	// time.Sleep(time.Duration(100)*time.Second)
+}
+
+func addZeros(str string, length int) string {
+	if len(str) < length {
+		return (strings.Repeat("0", length - len(str))) + str
+	}
+
+	return str
 }
 
 func isAllowed(routes []Route) bool {
@@ -152,7 +175,7 @@ func isAllowed(routes []Route) bool {
 
 // выбираем на каждый путь наименьшуюю стоимость
 func (scm *SCM) prepareRoutes() {
-	routes := readRoutes("src/config/routes.json")
+	routes := readRoutes("src/config/routes50.json")
 
 	minRoutes := make([]Route, 0)
 
@@ -207,7 +230,7 @@ func (scm *SCM) prepareRoutes() {
 }
 
 func (scm *SCM) initSCM() *SCM {
-	graph := readGraph("src/config/graph.json")
+	graph := readGraph("src/config/graph50.json")
 
 	scm.Tops = graph.Tops
 

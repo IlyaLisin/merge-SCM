@@ -38,6 +38,8 @@ type SCM struct {
 }
 
 func main() {
+	t0 := time.Now()
+
 	scm := new(SCM)
 	scm.initSCM()
 	scm.prepareRoutes()
@@ -81,6 +83,9 @@ func main() {
 	fmt.Println("State: ", state)
 	fmt.Println("Sum: ", calculateEnergy(state, scm.Routes))
 
+	t1 := time.Now();
+
+	fmt.Printf("Elapsed time: %v \n", t1.Sub(t0))
 	// time.Sleep(time.Duration(100)*time.Second)
 }
 
@@ -169,7 +174,7 @@ func (scm *SCM) generateInitState() {
 
 // выбираем на каждый путь наименьшуюю стоимость
 func (scm *SCM) prepareRoutes() {
-	routes := readRoutes("src/config/routes.json")
+	routes := readRoutes("src/config/routes50.json")
 
 	minRoutes := make([]Route, 0)
 
@@ -224,7 +229,7 @@ func (scm *SCM) prepareRoutes() {
 }
 
 func (scm *SCM) initSCM() *SCM {
-	graph := readGraph("src/config/graph.json")
+	graph := readGraph("src/config/graph50.json")
 
 	scm.Tops = graph.Tops
 
